@@ -35,6 +35,8 @@ namespace View
 			// выбрать значения из справочников для отображения в comboBox  
 			String selectMaterial = "SELECT id, Name, Price FROM Materials";
 			selectCombo(ConnectionString, selectMaterial, comboBoxMaterial, "Name", "id");
+			String selectSub = "SELECT id, Name FROM Subdivisions";
+			selectCombo(ConnectionString, selectSub, comboBoxSub, "Name", "id");
 			String selectMOLRec = "SELECT id, Name FROM MOL";
 			selectCombo(ConnectionString, selectMOLRec, comboBoxMOL, "Name", "id");			
 			String selectStorageRec = "SELECT id, Name FROM Sklad";
@@ -63,12 +65,10 @@ namespace View
 			// Обнулить значения переменных 
 			string sum = "0";
 			string count = "0";
-			string coment = null;
 			string Value1 = null;
 			string Value2 = null;
 			string Value3 = null;
 			string Value4 = null;
-			string Value5 = null;
 			if (comboBoxMaterial.Text != "")
 			{
 				//ОС 
@@ -78,6 +78,11 @@ namespace View
 			{
 				//Подразделение 
 				Value2 = comboBoxMOL.SelectedValue.ToString();
+			}
+			if (comboBoxSub.Text != "")
+			{
+				//Подразделение 
+				Value3 = comboBoxSub.SelectedValue.ToString();
 			}
 			if (comboBoxStorage.Text != "")
 			{
@@ -96,39 +101,26 @@ namespace View
 			}
 			String selectCost = "select Price from Materials where id ='" + Value1 + "'";
 			object cost = selectValue(ConnectionString, selectCost);
-			double Summa = Convert.ToDouble(cost) * Convert.ToInt32(textBoxCount.Text);
-			String selectDT = "select id from ChartOfAccounts where NumberOfAccount='10." + Value1 + "'";
+			double Summa = Convert.ToDouble(cost) * Convert.ToInt32(count);
+			String selectDT = "select id from ChartOfAccounts where NumberOfAccount='10.'";
 			object DT = selectValue(ConnectionString, selectDT);
-			String selectKT = "select id from ChartOfAccounts where NumberOfAccount='10." + Value1 + "'";
+			String selectKT = "select id from ChartOfAccounts where NumberOfAccount='60.'";
 			object KT = selectValue(ConnectionString, selectKT);
-			string add = "INSERT INTO JournalOfOperations (id, Date, Summ, Count, MOL, Sklad, Materials) " +
-				"VALUES (" + (Convert.ToInt32(maxValue) + 1) + ",'" + maskedTextBox1.Text + "','" + Summa.ToString() + "','" + textBoxCount.Text + "','" + Convert.ToInt32(Value3) + "','" + Convert.ToInt32(Value5) + "','" +
-				Convert.ToInt32(count) + "','" + Convert.ToInt32(Value2) + "','" + Convert.ToInt32(Value4) + "','" + Convert.ToInt32(Value1) + "')";
-			string addjourn = "INSERT INTO JournalOfProvodki (id, DebitAccount, SubDt1,  SubDt2," +
-				"SubDt3, KreditAccount, SubKt1, SubKt2, SubKt3, Count, Summ, Date) VALUES " +
-				"(" + (Convert.ToInt32(maxValuej) + 1) + ",'" + DT.ToString() + "','" + comboBoxMaterial.Text
-				+ "','" + comboBoxStorage.Text + "','" + comboBoxMOL.Text + "','" + KT.ToString()
-				+ "','" + comboBoxMaterial.Text + "','" + comboBoxStorage.Text
-				+ "','" + comboBoxMOL.Text + "','" + textBoxCount.Text + "','" + Summa.ToString() + "','"
-				+ maskedTextBox1.Text + "')";
-			ExecuteQuery(add);
-			ExecuteQuery(addjourn);
-			selectTable(ConnectionString);
-			//Поиск по базе данных значений 			
-			string selectcount = "select Сount from JournalOfProvodki where DebitAccount = '" + DT.ToString()
-				+ "' and KreditAccount = '" + KT.ToString()	+ "' and SubDt1 = '"
+			string selectcount = "select SUM(count) from JournalOfProvodki where DebitAccount = '" + DT.ToString()
+				+ "' and SubDt1 = '"
 				+ comboBoxMaterial.Text + "' and SubDt2 = '" + comboBoxStorage.Text + "' and SubDt3 = '"
 				+ comboBoxMOL.Text + "'";
 			object countMat = selectValue(ConnectionString, selectcount);
-			selectcount = "select SUM(Count) from JournalOfProvodki where DebitAccount = '" + DT.ToString()
-				+ "' and KreditAccount = '" + KT.ToString() + "' and SubKt1 = '"
+			selectcount = "select SUM(count) from JournalOfProvodki where DebitAccount = '" + DT.ToString()
+				+ "' and KreditAccount = '" + DT.ToString() + "' and SubKt1 = '"
 				+ comboBoxMaterial.Text + "' and SubKt2 = '" + comboBoxStorage.Text + "' and SubKt3 = '"
 				+ comboBoxMOL.Text + "'";
 			string selectDate = "select COUNT(*) from JournalOfProvodki where ((DebitAccount = '" + DT.ToString()
-				+ "' and KreditAccount = '" + KT.ToString() + "' and SubKt1 = '"
+				+ "' and KreditAccount = '" + DT.ToString() + "' and SubKt1 = '"
 				+ comboBoxMaterial.Text + "' and SubKt2 = '" + comboBoxStorage.Text + "' and SubKt3 = '"
 				+ comboBoxMOL.Text + "') or (DebitAccount = '" + DT.ToString()
-				+ "' and KreditAccount = '6' and SubDt1 = '"
+				+ "' and KreditAccount = '" + KT.ToString()
+				+ "' and SubDt1 = '"
 				+ comboBoxMaterial.Text + "' and SubDt2 = '" + comboBoxStorage.Text + "' and SubDt3 = '"
 				+ comboBoxMOL.Text + "')) and Date > '" + maskedTextBox1.Text + "'";
 			object countDate = selectValue(ConnectionString, selectDate);
@@ -155,7 +147,17 @@ namespace View
 				MessageBox.Show("Недостаточно материалов! На складе осталось " + (Convert.ToInt32(countMat) - Convert.ToInt32(countMater)) + " единиц");
 				return;
 			}
-			
+			string add = "INSERT INTO JournalOfOperations (id, Date, Summ, Count, MOL, Sklad, Materials, Subdivisions) " +
+				"VALUES (" + (Convert.ToInt32(maxValue) + 1) + ",'" + maskedTextBox1.Text + "','" + Summa.ToString() + "','" + textBoxCount.Text + "','" + Convert.ToInt32(Value2) + "','" + Convert.ToInt32(Value4) + "','" +
+				Convert.ToInt32(Value1) + "','" + Convert.ToInt32(Value3) + "')";
+			string addjourn = "INSERT INTO JournalOfProvodki (id, DebitAccount, SubDt1, SubDt2, " +
+				"SubDt3, KreditAccount, SubKt1, Count, Summ, Date, JournalOfOperations) " +
+				"VALUES (" + (Convert.ToInt32(maxValuej) + 1) + ",'" + DT.ToString() + "','" + comboBoxMaterial.Text
+				+ "','" + comboBoxStorage.Text + "','" + comboBoxMOL.Text + "','" + KT.ToString() + "','" +
+				comboBoxStorage.Text + "','" + textBoxCount.Text + "','" + Summa.ToString() + "','" + maskedTextBox1.Text + "'," + (Convert.ToInt32(maxValue) + 1) + ")";
+			ExecuteQuery(add);
+			ExecuteQuery(addjourn);
+			selectTable(ConnectionString);
 		}
 		private void ExecuteQuery(string txtQuery)
 		{
@@ -172,13 +174,13 @@ namespace View
 			{
 				SQLiteConnection connect = new SQLiteConnection(ConnectionString);
 				connect.Open();
-				SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter("Select JournalOfOperations.id AS '№ перемещения', JournalOfOperations.Date AS 'Дата', JournalOfOperations.Summ AS 'Сумма', Materials.Name AS 'Материал', JournalOfOperations.Count AS 'Количество' from JournalOfOperations JOIN Materials ON JournalOfOperations.Materials = Materials.id", connect);
+				SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter("Select JournalOfOperations.id AS '№ отпуска', JournalOfOperations.Date AS 'Дата', JournalOfOperations.Summ AS 'Сумма', Materials.Name AS 'Материал', JournalOfOperations.Count AS 'Количество' from JournalOfOperations JOIN Materials ON JournalOfOperations.Materials = Materials.id", connect);
 				DataSet ds = new DataSet();
 				dataAdapter.Fill(ds);
 				dataGridView1.DataSource = ds;
 				dataGridView1.DataMember = ds.Tables[0].ToString();
 				connect.Close();
-				dataGridView1.Columns["№ перемещения"].DisplayIndex = 0;
+				dataGridView1.Columns["№ отпуска"].DisplayIndex = 0;
 				dataGridView1.Columns["Дата"].DisplayIndex = 1;
 				dataGridView1.Columns["Сумма"].DisplayIndex = 2;
 				dataGridView1.Columns["Материал"].DisplayIndex = 3;
@@ -225,7 +227,6 @@ namespace View
 			string select = "select Price from Materials where id = '" + id + "'";
 			object str = selectValue(ConnectionString, select);
 			double sum = Convert.ToDouble(str) * Convert.ToInt32(textBoxCount.Text);
-
 			string count = "0";			
 			string Value1 = null;
 			string Value2 = null;
@@ -246,8 +247,7 @@ namespace View
 			{
 				//Подразделение 
 				Value4 = comboBoxStorage.SelectedValue.ToString();
-			}
-			
+			}			
 			//Поле количество 
 			if (textBoxCount.Text != "")
 			{
@@ -258,49 +258,52 @@ namespace View
 				MessageBox.Show("Количество материалов не может быть 0!");
 				return;
 			}//Поиск по базе данных значений 
-			String selectCost = "select Price from Material where id ='" + Value1 + "'";
+			String selectCost = "select Price from Materials where id ='" + Value1 + "'";
 			object cost = selectValue(ConnectionString, selectCost);
 			double Summa = Convert.ToDouble(cost) * Convert.ToInt32(count);
-			String selectDT = "select id from ChartOfAccounts where AccountNumber='10." + Value1 + "'";
+			String selectDT = "select id from ChartOfAccounts where NumberOfAccount='10." + Value1 + "'";
 			object DT = selectValue(ConnectionString, selectDT);
-			String selectKT = "select id from ChartOfAccounts where AccountNumber='10." + Value1 + "'";
+			String selectKT = "select id from ChartOfAccounts where NumberOfAccount='10." + Value1 + "'";
 			object KT = selectValue(ConnectionString, selectKT);
 			string selectcount = "select Count from JournalOfProvodki where DebitAccount = '" + DT.ToString()
-				+ "' and KreditAccount = '6' and SubDt1 = '"
+				+ "' and KreditAccount = '" + KT.ToString()
+				+ "' and SubDt1 = '"
 				+ comboBoxMaterial.Text + "' and SubDt2 = '" + comboBoxStorage.Text + "' and SubDt3 = '"
 				+ comboBoxMOL.Text + "'";
 			object countMat = selectValue(ConnectionString, selectcount);
-			selectcount = "select Summ(Count) from JournalOfProvodki where DebitAccount = '" + DT.ToString()
+			selectcount = "select SUM(Count) from JournalOfProvodki where DebitAccount = '" + DT.ToString()
 				+ "' and KreditAccount = '" + DT.ToString() + "' and SubKt1 = '"
 				+ comboBoxMaterial.Text + "' and SubKt2 = '" + comboBoxStorage.Text + "' and SubKt3 = '"
 				+ comboBoxMOL.Text + "'";
 			string selectDate = "select Count(*) from JournalOfProvodki where ((DebitAccount = '" + DT.ToString()
-				+ "' and KreditAccount = '" + DT.ToString() + "' and SubKt1 = '"
+				+ "' and KreditAccount = '" + KT.ToString() + "' and SubKt1 = '"
 				+ comboBoxMaterial.Text + "' and SubKt2 = '" + comboBoxStorage.Text + "' and SubKt3 = '"
 				+ comboBoxMOL.Text + "') or (DebitAccount = '" + DT.ToString()
-				+ "' and KreditAccount = '6' and SubDt1 = '"
+				+ "' and KreditAccount = '" + KT.ToString()
+				+ "' and SubDt1 = '"
 				+ comboBoxMaterial.Text + "' and SubDt2 = '" + comboBoxStorage.Text + "' and SubDt3 = '"
 				+ comboBoxMOL.Text + "')) and Date > '" + maskedTextBox1.Text + "'";
+			object countM = selectValue(ConnectionString, selectcount);
 			object countDate = selectValue(ConnectionString, selectDate);
 			if (countDate.ToString() != "0")
 			{
 				MessageBox.Show("Неверная дата! Есть документ с более поздней датой");
 				return;
 			}
-			if (countMat.ToString() == "")
+			if (countM.ToString() == "")
 			{
-				countMat = "0";
+				countM = "0";
 			}
 			object countMater = selectValue(ConnectionString, selectcount);
 			if (countMater.ToString() == "")
 			{
-				if (Convert.ToInt32(countMat) < Convert.ToInt32(count))
+				if (Convert.ToInt32(countM) < Convert.ToInt32(count))
 				{
-					MessageBox.Show("Недостаточно материалов! На складе осталось " + countMat + " единиц");
+					MessageBox.Show("Недостаточно материалов! На складе осталось " + countM + " единиц");
 					return;
 				}
 			}
-			else if (Convert.ToInt32(countMat) - (Convert.ToInt32(countMater) - Convert.ToInt32(dataGridView1[4, CurrentRow].Value.ToString())) < Convert.ToInt32(count))
+			else if (Convert.ToInt32(countM) - (Convert.ToInt32(countMater) - Convert.ToInt32(dataGridView1[4, CurrentRow].Value.ToString())) < Convert.ToInt32(count))
 			{
 				MessageBox.Show("Недостаточно материалов! На складе осталось " + (Convert.ToInt32(countMat) - Convert.ToInt32(countMater)) + " единиц");
 				return;
@@ -309,12 +312,13 @@ namespace View
 				+ sum.ToString() + "', Count = '" + textBoxCount.Text
 				+ "', MOL ='" + comboBoxMOL.SelectedValue.ToString() + "', Sklad = '"
 				+ comboBoxStorage.SelectedValue.ToString() + "', Materials = '" + comboBoxMaterial.SelectedValue.ToString() + "' where id = " + valueId +
-				";update JournalOfProvodki set DebitAccount = '" + DT.ToString() + "', SubDt1 = '" +
+				";" +
+				"update JournalOfProvodki set DebitAccount = '" + DT.ToString() + "', SubDt1 = '" +
 				comboBoxMaterial.Text + "',  SubDt2 = '" + comboBoxStorage.Text + "', SubDt3 = '" +
 				comboBoxMOL.Text + "', KreditAccount = '" + KT.ToString() + "', SubKt1 = '" +
-				comboBoxMaterial.Text + "',SubKt2 = '" + comboBoxStorage.Text + "',SubKt3 = '" +
+				comboBoxMaterial.Text + "',SubKt2 = '" + comboBoxStorage.Text + "', SubKt3 = '" +
 				comboBoxMOL.Text + "', Count = '" + textBoxCount.Text + "', Summ = '" + sum.ToString() +
-				"', Date = '" + maskedTextBox1.Text + "' where JournalOfOperatoins = " + valueId;
+				"', Date = '" + maskedTextBox1.Text + "' where JournalOfOperations = " + valueId;
 			SQLiteConnection connect = new SQLiteConnection(ConnectionString);
 			connect.Open();
 			SQLiteTransaction trans;
@@ -336,8 +340,7 @@ namespace View
 			int CurrentRow = dataGridView1.SelectedCells[0].RowIndex;
 			//получить значение IDвыбранной строки
 			string valueId = dataGridView1[0, CurrentRow].Value.ToString();
-			String selectCommand = "delete from JournalOfOperatoins where id=" + valueId + "; " +
-				"delete from JournalOfProvodki where JournalOfOperatoins=" + valueId;
+			String selectCommand = "delete from JournalOfOperations where id=" + valueId + "; " + "delete from JournalOfProvodki where JournalOfOperations=" + valueId;			
 			string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
 			SQLiteConnection connect = new SQLiteConnection(ConnectionString);
 			connect.Open();
@@ -373,10 +376,10 @@ namespace View
 		{
 			string id = dataGridView1[0, e.RowIndex].Value.ToString();
 			string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
-			String select = "select MaterialsId from JournalOfOperations where id = '" + id + "'";
+			String select = "select Materials from JournalOfOperations where id = '" + id + "'";
 			object str = selectValue(ConnectionString, select);
 			comboBoxMOL.SelectedValue = str.ToString();
-			select = "select SkladId from JournalOfOperations where id = '" + id + "'";
+			select = "select Sklad from JournalOfOperations where id = '" + id + "'";
 			str = selectValue(ConnectionString, select);
 			comboBoxStorage.SelectedValue = str.ToString();
 			DateTime newDate;
@@ -385,6 +388,13 @@ namespace View
 			maskedTextBox1.Text = newDate.ToString("yyyy.MM.dd");
 			textBoxCount.Text = dataGridView1[4, e.RowIndex].Value.ToString();
 			comboBoxMaterial.Text = dataGridView1[3, e.RowIndex].Value.ToString();
+		}
+		private void buttonPostJourn_Click(object sender, EventArgs e)
+		{
+			int CurrentRow = dataGridView1.SelectedCells[0].RowIndex;
+			string valueId = dataGridView1[0, CurrentRow].Value.ToString();
+			JournalOfProvodki form = new JournalOfProvodki(Convert.ToInt32(valueId));
+			form.Show();	
 		}
 	}
 }
