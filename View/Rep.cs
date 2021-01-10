@@ -12,21 +12,21 @@ using System.Windows.Forms;
 
 namespace View
 {
-    public partial class Report : Form
+    public partial class Rep : Form
     {
         private DataSet DS = new DataSet();
         private DataTable DT = new DataTable();
         private string sPath = Path.Combine(Application.StartupPath, "C://Users//par55//AppData//Local//Temp//Rar$EXa1416.20756/SQLiteStudio/basa2");
-        public Report()
+        public Rep()
         {
             InitializeComponent();
         }
-        private void Report_Load(object sender, EventArgs e)
+        private void Rep_Load(object sender, EventArgs e)
         {
             // вместо кодов отображаем наименование полей
             string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
-            String selectSub = "SELECT id, Name FROM Subdivisions";
-            selectCombo(ConnectionString, selectSub, comboBox1, "Name", "id");
+            String selectStorageRec = "SELECT ID, Name FROM Storage";
+           // selectCombo(ConnectionString, selectStorageRec, comboBox1, "Name", "ID");
         }
         public void Clear(DataGridView dataGridView)
         {
@@ -95,32 +95,36 @@ namespace View
         }
         private void buttonOk_Click(object sender, EventArgs e)
         {
-            Clear(dataGridView1);
+          /*  Clear(dataGridView1);
             string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
-            if (maskedTextBox1.Text != " - -" && maskedTextBox2.Text != " - -")
+            if (maskedTextBox1.Text != " - -")
             {
-                string report = "select JournalOfOperations.Material, Materials.Name, Materials.Price, JournalOfOperations.Count, JournalOfOperations.Summ " +
-                "from JournalOfOperations, Materials, Subdivisions where (JournalOfOperations.Date >= '" + maskedTextBox1.Text + "' " +
-                "and JournalOfOperations.Date <= '" + maskedTextBox2.Text + "') and Materials.id = JournalOfOperations.Material and Subdivisions.Name = '" + comboBox1.Text + "'" + "and JournalOfOperations.Subdivisions = Subdivisions.id" +
-                " GROUP BY JournalOfOperations.id";
+                string report = "select Material.ID As 'Код Материала', A.SubkontoDebit1 As 'Название материала'," +
+                " Material.Cost As 'Цена материала',((SELECT SUM(Count) " +
+                "FROM PostingJournal A WHERE A.SubkontoDebit2 = '" + comboBox1.Text + "' and " +
+                "Material.Name = A.SubkontoDebit1 GROUP BY A.SubkontoDebit1) " +
+                "- IFNULL((SELECT SUM(Count) FROM PostingJournal A WHERE A.SubkontoKredit2 = '" + comboBox1.Text + "' and" +
+                " Material.Name = A.SubkontoKredit1 GROUP BY A.SubkontoKredit1),0))" +
+                " AS 'Количество остатка', ((SELECT SUM(Count) FROM PostingJournal A WHERE A.SubkontoDebit2 = '" + comboBox1.Text + "' and " +
+                "Material.Name = A.SubkontoDebit1 GROUP BY A.SubkontoDebit1) " +
+                "- IFNULL((SELECT SUM(Count) FROM PostingJournal A WHERE A.SubkontoKredit2 = '" + comboBox1.Text + "' and" +
+                " Material.Name = A.SubkontoKredit1 GROUP BY A.SubkontoKredit1),0)) * Material.Cost AS 'Сумма остатка'" +
+                " FROM Material JOIN PostingJournal A ON " +
+                "(A.SubkontoDebit2 = '" + comboBox1.Text + "') and" +
+                " Material.Name = A.SubkontoDebit1 and A.date <= '" + maskedTextBox1.Text + "' GROUP BY A.SubkontoDebit1";
                 selectTable(ConnectionString, report);
-                dataGridView1.Columns[0].HeaderCell.Value = "Код материала";
-                dataGridView1.Columns[1].HeaderCell.Value = "Название материала";
-                dataGridView1.Columns[2].HeaderCell.Value = "Цена";
-                dataGridView1.Columns[3].HeaderCell.Value = "Количество";
-                dataGridView1.Columns[4].HeaderCell.Value = "Сумма";
                 int sum = 0;
                 for (int i = 0; i < Convert.ToInt32(dataGridView1.RowCount); ++i)
                 {
                     sum += Convert.ToInt32(dataGridView1.Rows[i].Cells[3].Value);
                 }
                 string sumT = sum.ToString();
-                label2.Text = "Итого: " + sumT;
+                label2.Text = "Итого:" + sumT;
             }
             else
             {
                 MessageBox.Show("Введите дату отчета");
-            }
+            }*/
         }
     }
 }

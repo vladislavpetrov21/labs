@@ -67,5 +67,11 @@ namespace View
             var form = Container.Resolve<Report>();
             form.ShowDialog();
         }
+
+        private void отчет2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = Container.Resolve<Rep>();
+            form.ShowDialog();
+        }
     }
 }

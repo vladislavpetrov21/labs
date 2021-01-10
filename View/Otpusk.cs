@@ -147,7 +147,7 @@ namespace View
 				MessageBox.Show("Недостаточно материалов! На складе осталось " + (Convert.ToInt32(countMat) - Convert.ToInt32(countMater)) + " единиц");
 				return;
 			}
-			string add = "INSERT INTO JournalOfOperations (id, Date, Summ, Count, MOL, Sklad, Materials, Subdivisions) " +
+			string add = "INSERT INTO JournalOfOperations (id, Date, Summ, Count, MOL, Sklad, Material, Subdivisions) " +
 				"VALUES (" + (Convert.ToInt32(maxValue) + 1) + ",'" + maskedTextBox1.Text + "','" + Summa.ToString() + "','" + textBoxCount.Text + "','" + Convert.ToInt32(Value2) + "','" + Convert.ToInt32(Value4) + "','" +
 				Convert.ToInt32(Value1) + "','" + Convert.ToInt32(Value3) + "')";
 			string addjourn = "INSERT INTO JournalOfProvodki (id, DebitAccount, SubDt1, SubDt2, " +
@@ -174,7 +174,7 @@ namespace View
 			{
 				SQLiteConnection connect = new SQLiteConnection(ConnectionString);
 				connect.Open();
-				SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter("Select JournalOfOperations.id AS '№ отпуска', JournalOfOperations.Date AS 'Дата', JournalOfOperations.Summ AS 'Сумма', Materials.Name AS 'Материал', JournalOfOperations.Count AS 'Количество' from JournalOfOperations JOIN Materials ON JournalOfOperations.Materials = Materials.id", connect);
+				SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter("Select JournalOfOperations.id AS '№ отпуска', JournalOfOperations.Date AS 'Дата', JournalOfOperations.Summ AS 'Сумма', Materials.Name AS 'Материал', JournalOfOperations.Count AS 'Количество' from JournalOfOperations JOIN Materials ON JournalOfOperations.Material = Materials.id", connect);
 				DataSet ds = new DataSet();
 				dataAdapter.Fill(ds);
 				dataGridView1.DataSource = ds;
@@ -311,7 +311,7 @@ namespace View
 			String selectCommand = "update JournalOfOperations set Date='" + maskedTextBox1.Text + "', Summ='"
 				+ sum.ToString() + "', Count = '" + textBoxCount.Text
 				+ "', MOL ='" + comboBoxMOL.SelectedValue.ToString() + "', Sklad = '"
-				+ comboBoxStorage.SelectedValue.ToString() + "', Materials = '" + comboBoxMaterial.SelectedValue.ToString() + "' where id = " + valueId +
+				+ comboBoxStorage.SelectedValue.ToString() + "', Material = '" + comboBoxMaterial.SelectedValue.ToString() + "' where id = " + valueId +
 				";" +
 				"update JournalOfProvodki set DebitAccount = '" + DT.ToString() + "', SubDt1 = '" +
 				comboBoxMaterial.Text + "',  SubDt2 = '" + comboBoxStorage.Text + "', SubDt3 = '" +
@@ -376,7 +376,7 @@ namespace View
 		{
 			string id = dataGridView1[0, e.RowIndex].Value.ToString();
 			string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
-			String select = "select Materials from JournalOfOperations where id = '" + id + "'";
+			String select = "select Material from JournalOfOperations where id = '" + id + "'";
 			object str = selectValue(ConnectionString, select);
 			comboBoxMOL.SelectedValue = str.ToString();
 			select = "select Sklad from JournalOfOperations where id = '" + id + "'";

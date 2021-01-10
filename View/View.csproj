@@ -118,6 +118,12 @@
     <Compile Include="Providers.Designer.cs">
       <DependentUpon>Providers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Rep.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Rep.Designer.cs">
+      <DependentUpon>Rep.cs</DependentUpon>
+    </Compile>
     <Compile Include="Report.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -165,6 +171,9 @@
     </Compile>
     <EmbeddedResource Include="Providers.resx">
       <DependentUpon>Providers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Rep.resx">
+      <DependentUpon>Rep.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Report.resx">
       <DependentUpon>Report.cs</DependentUpon>
