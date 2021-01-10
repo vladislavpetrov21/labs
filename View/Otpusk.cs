@@ -104,7 +104,7 @@ namespace View
 			double Summa = Convert.ToDouble(cost) * Convert.ToInt32(count);
 			String selectDT = "select id from ChartOfAccounts where NumberOfAccount='10.'";
 			object DT = selectValue(ConnectionString, selectDT);
-			String selectKT = "select id from ChartOfAccounts where NumberOfAccount='60.'";
+			String selectKT = "select id from ChartOfAccounts where NameOfAccount='" + Value3 + "'";
 			object KT = selectValue(ConnectionString, selectKT);
 			string selectcount = "select SUM(count) from JournalOfProvodki where DebitAccount = '" + DT.ToString()
 				+ "' and SubDt1 = '"

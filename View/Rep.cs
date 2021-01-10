@@ -24,9 +24,7 @@ namespace View
         private void Rep_Load(object sender, EventArgs e)
         {
             // вместо кодов отображаем наименование полей
-            string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";
-            String selectStorageRec = "SELECT ID, Name FROM Storage";
-           // selectCombo(ConnectionString, selectStorageRec, comboBox1, "Name", "ID");
+            string ConnectionString = @"Data Source=" + sPath + ";New=False;Version=3";           
         }
         public void Clear(DataGridView dataGridView)
         {
@@ -119,7 +117,6 @@ namespace View
                     sum += Convert.ToInt32(dataGridView1.Rows[i].Cells[3].Value);
                 }
                 string sumT = sum.ToString();
-                label2.Text = "Итого:" + sumT;
             }
             else
             {
